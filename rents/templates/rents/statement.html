@@ -1,0 +1,65 @@
+{% load static %}
+<title>{{ customer.name }} - 租金结算表</title>
+<head>
+<link rel="stylesheet" type="text/css" href="{% static "bootstrap/css/bootstrap.min.css" %}" />
+<style type="text/css">
+.revert td
+{
+    color:#090;
+}
+</style>
+</head>
+<div class="container">
+<div class="row">
+<div class="col-md-12">
+	<h3>{{ customer.name }} - 租金结算表</h3>
+	<table class="table table-bordered table-condensed">
+	<thead>
+		<tr>
+			<th>日期</th>
+			<th>名称</th>
+			<th>单位</th>
+			<th>发出数</th>
+			<th>回收数</th>
+			<th>结余量</th>
+			<th>起租日期</th>
+			<th>截止日期</th>
+			<th>租用天数</th>
+			<th>单价(元)</th>
+			<th>租金(元)</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for item in detail %}
+		<tr class="{{ item.class }}">
+			<td>{{ item.date|date:"Y-m-d" }}</td>
+			<td>{{ item.product }}</td>
+			<td>{{ item.unit }}</td>
+			<td>{{ item.out|default_if_none:"" }}</td>
+			<td>{{ item.in|default_if_none:"" }}</td>
+			<td>{{ item.remain }}</td>
+			<td>{{ item.begin_date|date:"Y-m-d" }}</td>
+			<td>{{ item.end_date|date:"Y-m-d" }}</td>
+			<td>{{ item.days }}</td>
+			<td>¥{{ item.price }}</td>
+			<td>¥{{ item.amount }}</td>
+		</tr>
+	{% endfor %}
+		<tr class="success">
+			<td></td>
+			<td><strong>合计</strong></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td><strong>¥{{ customer.receivable }}</strong></td>
+		</tr>
+	</tbody>
+	</table>
+</div>
+</div>
+</div>

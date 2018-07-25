@@ -1,0 +1,65 @@
+{% extends "admin/base_site.html" %}
+{% block title %}客户 | {{ customer.name }}{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />
+<style type="text/css">
+.revert td
+{
+    color:#090;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+    <div style="float:left">
+        <h1>{{ customer.name }}</h1>
+        <h2><a href="{% url 'rents:statement' customer.id %}" target="_blank">租金结算表</a></h2>
+    </div>
+    <div style="float:right">
+        <p style="float:right;"><strong>未归还: </strong>{{ customer.remainValue }}</p>
+        <br class="clear" />
+        <p style="float:right; color:red;"><strong>欠款: </strong>￥{{ customer.debtValue|floatformat:"-2" }}</p>
+    </div>
+    <table style="width:100%;">
+      <thead>
+        <tr>
+          <th>日期</th>
+          <th>租借/归还</th>
+          <th>描述</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in rent_list %}
+            <!--set text color if item is revert-->
+            <tr class="{% cycle 'row1' 'row2' %} {{ item.isRevert|yesno:"revert," }}">
+                <td>{{ item.obj.happenTime|date:'Y-m-d' }}</td>
+                <td>
+                    {{ item.isRevert|yesno:"归还,租借" }}
+                </td>
+                <td>
+                    {{ item.obj.summary }} <a href="/admin/rents/{{ item.isRevert|yesno:"revert,rent" }}/{{ item.obj.id }}" class="changelink">编辑</a>
+                </td>
+                <td>{{ item.obj.remarks }}</td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if rent_list.paginator.num_pages > 1 %}
+    <p class="paginator">
+        {% for i in rent_list.paginator.page_range%}
+            {% if i == rent_list.number %}
+            <span class="this-page">{{ i }}</span>
+            {% else %}
+            <a href="?p={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

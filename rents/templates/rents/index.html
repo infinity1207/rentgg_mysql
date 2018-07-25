@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% block title %}首页{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<style type="text/css">
+.total td
+{
+    color:blue;
+    font-size:14px;
+	text-decoration:underline;
+	font-weight:bold;
+}
+</style>
+{% endblock %}
+{% block content %}
+    <div>
+        <table style="width:100%;">
+        <thead>
+            <tr>
+                <th><strong>客户</strong></th>
+                <th><strong>未归还</strong></th>
+                <th><strong>应收款</strong></th>
+                <th><strong>已收款</strong></th>
+                <th><strong>欠款</strong></th>
+                <th><strong>备注</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cust in customer_list %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td><a href="{% url 'rents:customer' cust.id %}?p=1">{{ cust.name }}</a></td>
+                <td>{{ cust.remainValue }}</td>
+                <td>￥{{ cust.receivableValue|floatformat:"-2" }}</td>
+                <td>￥{{ cust.receivedValue|floatformat:"-2" }}</td>
+                <td style="color:red;">￥{{ cust.debtValue|floatformat:"-2" }}</td>
+                <td>{{ cust.remarks }}</td>
+            </tr>
+            {% endfor %}
+
+
+            <tr class="total">
+                <td>合计</td>
+                <td>{{ total.remain }}</td>
+                <td>￥{{ total.receivable|floatformat:"-2" }}</td>
+                <td>￥{{ total.received|floatformat:"-2" }}</td>
+                <td>￥{{ total.debt|floatformat:"-2" }}</td>
+                <td></td>
+            </tr>
+
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

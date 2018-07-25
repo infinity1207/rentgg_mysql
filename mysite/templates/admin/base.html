@@ -1,0 +1,110 @@
+{% load admin_static %}{% load firstof from future %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+{% block extrastyle %}{% endblock %}
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+{% block extrahead %}{% endblock %}
+<style>
+ul.menu
+{
+	float:left;
+	width:100%;
+	padding:0;
+	margin:0;
+	list-style-type:none;
+}
+li.menu
+{
+	display: inline;
+}
+li.menu a
+{
+	display: inline-block;
+	font-size: 14px;
+	width:6em;
+	text-decoration:none;
+	color:#36F;
+	padding:0.2em 0.6em;
+	border-right:1px solid white;
+	text-align:center;
+}
+li.menu a:hover
+{
+    background-color:#ff3300
+}
+</style>
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+	<!-- Container -->
+    <div class="container">
+		{% if not is_popup %}
+		<!-- Header -->
+		<div id="header">
+			<div id="branding">
+			{% block branding %}{% endblock %}
+			</div>
+			{% if user.is_active and user.is_staff %}
+			<div id="user-tools">
+				{% trans 'Welcome,' %}
+				<strong>{% firstof user.get_short_name user.get_username %}</strong>.
+				{% block userlinks %}
+					{% url 'django-admindocs-docroot' as docsroot %}
+					{% if docsroot %}
+						<a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+					{% endif %}
+					{% if user.has_usable_password %}
+					<a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
+					{% endif %}
+					<a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+				{% endblock %}
+			</div>
+			{% endif %}
+			{% block nav-global %}
+				<div class="menu">
+					<ul class="menu">
+						<li class="menu"><a href="{% url 'rents:index' %}">首页</a></li>
+						<li class="menu"><a href="/admin/rents/rent/">租借</a></li>
+						<li class="menu"><a href="/admin/rents/revert/">归还</a></li>
+						<li class="menu"><a href="/admin/rents/receipt/">收款</a></li>
+						<li class="menu"><a href="/admin/rents/product/">产品</a></li>
+						<li class="menu"><a href="/admin/rents/customer/">客户</a></li>
+					</ul>
+				</div>
+			{% endblock %}
+		</div>
+		<!-- END Header -->
+		{% endif %}
+
+		{% block messages %}
+			{% if messages %}
+			<ul class="messagelist">{% for message in messages %}
+			  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+			{% endfor %}</ul>
+			{% endif %}
+		{% endblock messages %}
+
+		<!-- Content -->
+		<div id="content" class="{% block coltype %}colM{% endblock %}">
+			{% block pretitle %}{% endblock %}
+			{% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+			{% block content %}
+			{% block object-tools %}{% endblock %}
+			{{ content }}
+			{% endblock %}
+			{% block sidebar %}{% endblock %}
+			<br class="clear" />
+		</div>
+		<!-- END Content -->
+
+		{% block footer %}<div id="footer"></div>{% endblock %}
+	</div>
+	<!-- END Container -->
+</body>
+</html>
